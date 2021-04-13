@@ -149,21 +149,21 @@ CCTAACCTAACCCTAACCCTAACCTACCTA
 ;48808/58/55*5:/55/5:6:/57/)//
 ```
 
-## Read mapping
+### Read mapping
 
-### 1. Align the fastq file against the reference human genome.
+#### 1. Align the fastq file against the reference human genome.
 Replace $threads by the number of CPUs you want to use.
 This generates the aligned BAM file. XXX
 ```
 bwa mem -t $threads hg38.fa IonXpress_001_18B0246378_1_2019-02-21.fastq
 ```
 
-### 2. Sort the BAM file according to the genome coordinates.
+#### 2. Sort the BAM file according to the genome coordinates.
 ```
 samtools sort -@ $threads -o IonXpress_001_18B0246378_1_2019-02-21.sorted.bam IonXpress_001_18B0246378_1_2019-02-21.bam
 ```
 
-### 3. Index the sorted BAM file.
+#### 3. Index the sorted BAM file.
 Many analysis tools will require the BAM file to be indexed to be able to quickly access reads mapped to specific genome regions.
 ```
 samtools index IonXpress_001_18B0246378_1_2019-02-21.sorted.bam
@@ -176,11 +176,11 @@ You can also print the 5 first reads.
 ```
 samtools view IonXpress_001_18B0246378_1_2019-02-21.sorted.bam | head -5
 ```
-## Summary statistics
+### Summary statistics
 
 You can use samtools to quickly get some statistics about your sample. (Q: Is this interesting?)
 
-## Visualisation
+### Visualisation
 
 IGV is a popular API to visualise genetic files like FASTA or BAM.
 After IGV starts, you can see a window.

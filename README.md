@@ -18,7 +18,18 @@ For example, the picture below is a part of genome for a deeper depth of coverag
 # Part 0 - Setup
 
 The following packages are needed.
-The following presumes $HOME/bin is in your $PATH. (Q: do I need to specify how to do this?)
+
+The following presumes $HOME/bin is in your $PATH.
+To check, type the following form your terminal:
+```
+echo $PATH
+```
+if $HOME/bin does not appear, then type:
+```
+export PATH=$PATH:"$HOME/bin"
+```
+To add it permanently, you can add it to your ~/.bash_rc (Linux) or your ~/.bash_profile (Mac OS) file.
+Also, make sure $HOME/bin folder exists. Otherwise, create it:  ``` mkdir $HOME/bin```.
 
 - [bwa](https://sourceforge.net/projects/bio-bwa/files/): for aligning reads to the reference genome
 ```
@@ -28,6 +39,9 @@ cp bwa/bwa $HOME/bin
 ```
 - [samtools](https://sourceforge.net/projects/samtools/files/): for aligned file manipulation
 ```
+git clone https://github.com/samtools/htslib.git
+make -C htslib
+
 git clone https://github.com/samtools/samtools.git
 make -C samtools
 cp samtools/samtools $HOME/bin
@@ -126,28 +140,35 @@ You should get something like the following:
 1.5G hg38.fa.sa
 ```
 
-## A liquid biposy sample
+## A simulated liquid biposy sample
 
-Let's now download a sequenced liquid biopsy sample from a pregnant mother for NIPT.
-(Q: Do we take a sample from the igene company? If yes, where do we store the FASTQ file? On GitHub? -> privacy issue + large file Or do we take a sample from NCBI?)
+We are going to process the artificial liquid biopsy sample **reads2.fastq.gz** available on the following [link](https://drive.google.com/file/d/1k6fV3gEOopjZWVbWWA5n03vGFYMGIgVq/view?usp=sharing).
+It was generated from benchmark genome from the [Genome In the Bottle](https://github.com/genome-in-a-bottle/giab_data_indexes) database by mixing 0.1x coverage from the Chinese mother HG007 + 0.01x coverage from her son HG005.
+
 The raw output of the Illumina NGS sequencing is stored in a FASTQ [XXX] file.
 
+First, download the file on your local computer and save it in your working directory.
+Then, unzip the file:
+```
+gzip –d reads2.fastq.gz
+```
 We can have a look at the first read of the file:
 ```
-head -4 Ion.fastq
+head -4 reads2.fastq
 ```
-You can obtain the following. In a FASTQ, each read is stored into 4 lines with:
+You can obtain the following.
+```
+@HISEQ1:63:HB65FADXX:2:2209:7674:70956
+CTGGTGAGGGGCCCGGAGGAGCCTTTGCCCGCGTGTCAGACTCCATCCCTCCTCTGCCGCCACCGCAGCAGCCACAGGCAGAGGAGGACGAGGACGACTGGGAATCGTAGGGGGCTCCATGACACCTTTCCCCCCAGACCCAGACTTG
++
+@BCFDEFFGGHHHJJJJJJJJIJJJJJJJJJJJGHIHHHHHHFFFFFEDEEDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDABDDDDDDDDDDCBDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDC
+```
+
+In a FASTQ, each read is stored into 4 lines with:
 1. the read ID
 2. the raw sequence of letters/nucleotides
-3. 2. a line with the '+' symbol
+3. a line with the '+' symbol
 4. the base quality score [XXX] for each base in line 2 in ASCII.
-
-```
-@R1FMJ:04530:11901
-CCTAACCTAACCCTAACCCTAACCTACCTA
-+
-;48808/58/55*5:/55/5:6:/57/)//
-```
 
 ### Read mapping
 
@@ -155,30 +176,27 @@ CCTAACCTAACCCTAACCCTAACCTACCTA
 Replace $threads by the number of CPUs you want to use.
 This generates the aligned BAM file. XXX
 ```
-bwa mem -t $threads hg38.fa IonXpress_001_18B0246378_1_2019-02-21.fastq
+bwa mem -t $threads -o reads2.bam hg38.fa reads2.fastq 
 ```
 
 #### 2. Sort the BAM file according to the genome coordinates.
 ```
-samtools sort -@ $threads -o IonXpress_001_18B0246378_1_2019-02-21.sorted.bam IonXpress_001_18B0246378_1_2019-02-21.bam
+samtools sort -@ $threads -o reads2.sorted.bam reads2.bam
 ```
 
 #### 3. Index the sorted BAM file.
 Many analysis tools will require the BAM file to be indexed to be able to quickly access reads mapped to specific genome regions.
 ```
-samtools index IonXpress_001_18B0246378_1_2019-02-21.sorted.bam
+samtools index reads2.sorted.bam
 ```
 Finally, you can quickly look at the header of you aligned sample. You can check you file is sorted by looking at the first line. Then, the header gives you the list of chromosome or reference names. 
 ```
-samtools view -H IonXpress_001_18B0246378_1_2019-02-21.sorted.bam
+samtools view -H reads2.sorted.bam | head -30
 ```
 You can also print the 5 first reads.
 ```
-samtools view IonXpress_001_18B0246378_1_2019-02-21.sorted.bam | head -5
+samtools view reads2.sorted.bam | head -5
 ```
-### Summary statistics
-
-You can use samtools to quickly get some statistics about your sample. (Q: Is this interesting?)
 
 ### Visualisation
 

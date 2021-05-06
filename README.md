@@ -10,7 +10,7 @@ Summer Workshop 2021
 
 The genome can be seen as a very long string composed from an alphabet of 4 "letters": {A,C,G,T,(sometimes N for unknown)}. The letters are called **nucleotides or bases**.
 **Next-generation sequencing (NGS)** technologies such as [Illumina](https://www.youtube.com/watch?v=fCd6B5HRaZ8) are able to recognize the nucleotides on short "substrings" or fragments called **reads** of length 100-300 nucleotides. Sequencing a sample generates millions of such substrings/reads so that genome is tiled to about 0.1 to 1 times in the dataset. We say it is an **ultra-low pass whole genome sequencing (ULP-WGS)** with a 0.1x to 1x depth of coverage.
-For example, the picture below is a part of genome for a deeper depth of coverage (~30x). You can see its sequence at the bottom. The grey bars in the middle are reads.
+For example, the picture below is a part of genome for a deeper depth of coverage (~30x). You can see its sequence at the bottom. The grey bars in the middle are reads. At this depth of coverage, we can also identify mutations (variant from the reference genome) enhanced in green.
 
 ![68747470733a2f2f692e696d6775722e636f6d2f393559733372452e706e67](https://user-images.githubusercontent.com/30068394/114520681-456f6600-9c74-11eb-8898-f4893cd96b93.png)
 
@@ -100,7 +100,7 @@ CCCCAGCCAATCGACGGCCGC
 
 #### B. BWA's FM index
 
-BWA uses the FM-index, which a compressed full-text substring index based around the Burrows-Wheeler transform [XXX]. Generate this index by running the following:
+BWA uses the FM-index, which a compressed full-text substring index based around the [Burrows-Wheeler transform](https://en.wikipedia.org/wiki/Burrows%E2%80%93Wheeler_transform). Generate this index by running the following:
 ``` 
 bwa index hg38.fa
 ```
@@ -145,7 +145,7 @@ You should get something like the following:
 We are going to process the artificial liquid biopsy sample **reads2.fastq.gz** available on the following [link](https://drive.google.com/file/d/1k6fV3gEOopjZWVbWWA5n03vGFYMGIgVq/view?usp=sharing).
 It was generated from benchmark genome from the [Genome In the Bottle](https://github.com/genome-in-a-bottle/giab_data_indexes) database by mixing 0.1x coverage from the Chinese mother HG007 + 0.01x coverage from her son HG005.
 
-The raw output of the Illumina NGS sequencing is stored in a FASTQ [XXX] file.
+The raw output of the Illumina NGS sequencing is stored in a [FASTQ](https://en.wikipedia.org/wiki/FASTQ_format) file.
 
 First, download the file on your local computer and save it in your working directory.
 Then, unzip the file:
@@ -168,13 +168,13 @@ In a FASTQ, each read is stored into 4 lines with:
 1. the read ID
 2. the raw sequence of letters/nucleotides
 3. a line with the '+' symbol
-4. the base quality score [XXX] for each base in line 2 in ASCII.
+4. the [base quality score](https://en.wikipedia.org/wiki/FASTQ_format#Encoding) for each base in line 2 in ASCII.
 
 ### Read mapping
 
 #### 1. Align the fastq file against the reference human genome.
 Replace $threads by the number of CPUs you want to use.
-This generates the aligned BAM file. XXX
+This generates the aligned [BAM file](https://en.wikipedia.org/wiki/SAM_(file_format)).
 ```
 bwa mem -t $threads -o reads2.bam hg38.fa reads2.fastq 
 ```
@@ -189,13 +189,17 @@ Many analysis tools will require the BAM file to be indexed to be able to quickl
 ```
 samtools index reads2.sorted.bam
 ```
-Finally, you can quickly look at the header of you aligned sample. You can check you file is sorted by looking at the first line. Then, the header gives you the list of chromosome or reference names. 
+Finally, you can quickly look at the header of you aligned sample. You can check you file is sorted by looking at the first line. It should say: ```SO:coordinate``` (sorted by coordinates). Then, the header gives you the list of chromosome or reference names. 
 ```
 samtools view -H reads2.sorted.bam | head -30
 ```
 You can also print the 5 first reads.
 ```
-samtools view reads2.sorted.bam | head -5
+samtools view reads2.sorted.bam | head -1
+```
+You should obtain something like this:
+```
+HISEQ1:66:HB7AUADXX:1:2114:17455:97529	16	chr1	10035	0	12S71M1I41M1D23M	*	0	0	CCTACCTCTATACCTAACGCTAACCCTCCCCCTAACCCTAACCCTAACCCTAACCCTAACGCTCACCCTAACCCTAACCCCAACCCCAACCCTAACCCTAACCCTAACCCTAACCCTAACCCTAACCATAACCCTAACCCTAACCCTA	(+(+(((((+((3+&2&)4222<0&5)&&((+(((+9?8((<3??8+((+(2+((+)+)0(88(>1@8<8(895(;3B?;93,5=:-()@.868..88(.*D?B?)*@@DF?1GBFDF?E;A<A2E?EFEAIIGBFFDFDDB2D@@@@	NM:i:9	MD:Z:6C8A0A31C2A16T43^C2C20	AS:i:86	XS:i:84	XA:Z:chr4,+190122918,20M3D67M1I48M12S,11;chr1,+248946019,38M1D46M1I35M28S,7;chr15,+101980870,20M1D42M3D22M3I32M29S,10;chr3,-10388,28S41M1I28M1D43M1I6M,8;chr3,-10461,29S40M1I13M1I64M,9;
 ```
 
 ### Visualisation
@@ -214,11 +218,9 @@ Then,
 
 3. Play with it
 
-![68747470733a2f2f692e696d6775722e636f6d2f636651796c36572e706e67](https://user-images.githubusercontent.com/30068394/114520743-50c29180-9c74-11eb-871c-96d9e09444b0.png)
-
+<img width="1572" alt="igv_read2" src="https://user-images.githubusercontent.com/30068394/117231983-e9eb5f00-ae52-11eb-896d-e511d3c2423b.png">
 
 
 # Part 2 - Downstream analysis
 
 To extract read information from BAM files in coding manner, an easy way is to learn Python and use the [Pysam](https://pysam.readthedocs.io/en/latest/) package.
-(Q: what do I put there? Shall I stop the tutorial there?)

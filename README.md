@@ -59,7 +59,7 @@ sudo apt-get install wget
 
 ## The reference human genome
 
-The human genome is composed of 3 trillions of nucleotides or base pairs and organised into 22+XY chromosomes. Each chromosome is an independent long string.
+The human genome is composed of 3 billions of nucleotides or base pairs and organised into 22+XY chromosomes. Each chromosome is an independent long string.
 Here is the karyotype (picture overview) of a human male genome.
 
 ![DNA_human_male_chromosomes](https://user-images.githubusercontent.com/30068394/114515152-a136f080-9c6e-11eb-9cfa-0260f121cf67.png)
@@ -104,7 +104,7 @@ BWA uses the FM-index, which a compressed full-text substring index based around
 ``` 
 bwa index hg38.fa
 ```
-You should see bwa generate some information about the build process:
+You should see bwa generates some information about the build process:
 ```
 [bwa_index] Pack FASTA... 18.88 sec
 [bwa_index] Construct BWT for the packed sequence...
